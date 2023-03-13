@@ -13,22 +13,22 @@ import org.json.JSONObject
 
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var preferences: SharedPreferences;
+    private lateinit var preferences: SharedPreferences
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        var username = findViewById<EditText>(R.id.username)
-        var email = findViewById<EditText>(R.id.email)
-        var registerbutton = findViewById<Button>(R.id.registerbutton)
+        val username = findViewById<EditText>(R.id.username)
+        val email = findViewById<EditText>(R.id.email)
+        val registerButton = findViewById<Button>(R.id.registerbutton)
         preferences = getSharedPreferences("login", MODE_PRIVATE)
         if(preferences.getBoolean("loggedi",false)){
-            goToMainActivity();
+            goToMainActivity()
         }
-        registerbutton.setOnClickListener {
-            val username = username.text
-            val email = email.text
-            if(this.checkEnteredData(username, email)){
-                if (this.loginUser(username, email)) {
+        registerButton.setOnClickListener {
+            val sUserName = username.text
+            val sEmail = email.text
+            if(this.checkEnteredData(sUserName, sEmail)){
+                if (this.loginUser(sUserName, sEmail)) {
                     this.goToMainActivity()
                 }
             }
@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity() {
                 mJsonObject.put("params", data)
                 RequestJSON.instance().setURL("asgard").setMethod("POST").setData(mJsonObject).send(this, this::responseApiSuccess, this::responseApiError)
             } catch (error: Exception) {
-                error.printStackTrace();
+                error.printStackTrace()
                 return false
             }
             val t = Toast.makeText(this, "Logged in successfully", Toast.LENGTH_SHORT)
@@ -72,12 +72,12 @@ class MainActivity : AppCompatActivity() {
         return false
     }
     private fun responseApiSuccess(response: JSONObject) {
-        preferences.edit().putBoolean("loggedi", true).apply();
-        Log.i("request-success", response.toString());
+        preferences.edit().putBoolean("loggedi", true).apply()
+        Log.i("request-success", response.toString())
     }
 
     private fun responseApiError(error: Exception) {
-        Log.e("request-error", error.toString());
+        Log.e("request-error", error.toString())
     }
 }
 
