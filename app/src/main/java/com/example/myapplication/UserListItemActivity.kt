@@ -1,6 +1,5 @@
 package com.example.myapplication
 
-import RequestJSON
 import android.os.Bundle
 import android.util.Log
 import android.widget.EditText

@@ -1,3 +1,5 @@
+package com.example.myapplication
+
 import android.app.Activity
 import com.android.volley.*
 import com.android.volley.toolbox.JsonObjectRequest
@@ -6,113 +8,113 @@ import org.json.JSONObject
 import java.lang.Exception
 
 class RequestJSON {
-    private val baseURL: String = "http://10.0.2.2:8080/";
-    private var url: String = "";
-    private var method: String = "GET";
-    private var requestData: JSONObject = JSONObject();
-    private var queryString: String = "";
+    private val baseURL: String = "http://0.0.0.0:8080/"
+    private var url: String = ""
+    private var method: String = "GET"
+    private var requestData: JSONObject = JSONObject()
+    private var queryString: String = ""
 
     companion object Factory {
-        fun instance(): RequestJSON = RequestJSON();
+        fun instance(): RequestJSON = RequestJSON()
     }
 
     fun setURL(url: String): RequestJSON {
-        this.url = url;
-        return this;
+        this.url = url
+        return this
     }
 
     fun setMethod(method: String): RequestJSON {
-        this.method = method.toLowerCase();
-        return this;
+        this.method = method.lowercase()
+        return this
     }
 
     fun setData(data: JSONObject): RequestJSON {
-        this.requestData = data;
-        return this;
+        this.requestData = data
+        return this
     }
 
     private fun appendQuery(array: Array<String>, element: String): Array<String> {
-        val list: MutableList<String> = array.toMutableList();
-        list.add(element);
+        val list: MutableList<String> = array.toMutableList()
+        list.add(element)
 
-        return list.toTypedArray();
+        return list.toTypedArray()
     }
 
     fun setQuery(query: JSONObject) : RequestJSON {
         // limpa o queryString
-        this.queryString = "";
+        this.queryString = ""
 
         // obtendo as chaves do json
-        val keys = query.keys();
+        val keys = query.keys()
         // criando array para conter as querys
-        var querys: Array<String> = arrayOf();
+        var querys: Array<String> = arrayOf()
 
         // obtendo os valores atravéz da chave e adicionando no array
         for(key in keys) {
-            querys = this.appendQuery(querys, key + "=" + query.get(key));
+            querys = this.appendQuery(querys, key + "=" + query.get(key))
         }
 
         // verifica se existe valores no array
         // para conversão em stringQuery
         if (querys.size > 0) {
-            this.queryString += "?";
-            val size = querys.size;
-            var count = 0;
+            this.queryString += "?"
+            val size = querys.size
+            var count = 0
 
             while (count < size) {
-                var querystring = "";
+                var querystring = ""
 
-                if (count == 0) {
-                    querystring = querys[count];
+                querystring = if (count == 0) {
+                    querys[count]
                 } else {
-                    querystring = "&" + querys[count];
+                    "&" + querys[count]
                 }
 
-                this.queryString += querystring;
-                count++;
+                this.queryString += querystring
+                count++
             }
         }
 
-        return this;
+        return this
     }
 
     private fun getMethod(): Int {
         return when(this.method) {
             "get" -> {
-                Request.Method.GET;
+                Request.Method.GET
             }
             "post" -> {
-                Request.Method.POST;
+                Request.Method.POST
             }
             "put" -> {
-                Request.Method.PUT;
+                Request.Method.PUT
             }
             "delete" -> {
-                Request.Method.DELETE;
+                Request.Method.DELETE
             }
-            else -> Request.Method.GET;
+            else -> Request.Method.GET
         }
     }
 
     fun send(context: Activity, responseListiner: (response: JSONObject) -> Unit, errorListiner: (error: Exception) -> Unit) {
-        val queue = Volley.newRequestQueue(context);
-        var url = this.baseURL + this.url + this.queryString;
-        var data: JSONObject = this.requestData;
+        val queue = Volley.newRequestQueue(context)
+        val url = this.baseURL + this.url + this.queryString
+        val data: JSONObject = this.requestData
 
         // limpando queryString após ser utilizado
-        this.queryString = "";
+        this.queryString = ""
         // limpando url após ser utilizado
-        this.url = "";
+        this.url = ""
         // limpando requestData após ser utilizado
-        this.requestData = JSONObject();
+        this.requestData = JSONObject()
 
         val jsonObjectRequest = JsonObjectRequest(this.getMethod(), url, data, fun (response) {
-            responseListiner(response);
+            responseListiner(response)
         }, fun (error) {
-            errorListiner(error);
+            errorListiner(error)
         })
 
         // adicionando requesição ao queue
-        queue.add(jsonObjectRequest);
+        queue.add(jsonObjectRequest)
     }
 }
