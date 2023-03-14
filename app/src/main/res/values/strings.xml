@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">My Application</string>
+    <string name="app_name">TCore Messenger</string>
     <string name="title_activity_user_list">UserListActivity</string>
     <string name="large_text">
         "Material is the metaphor.\n\n"
