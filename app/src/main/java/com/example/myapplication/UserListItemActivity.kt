@@ -18,26 +18,36 @@ class UserListItemActivity : AppCompatActivity() {
         setContentView(R.layout.activity_user_list_item)
         val intentData = intent
         val username = intentData.getStringExtra("username")
+        val loggedInUserId = intentData.getIntExtra("loggedUserId", 0)
+
         try {
             val sData = JSONArray()
             sData.put(username)
+            sData.put(loggedInUserId.toString())
+            Log.i("request-data", sData.toString())
             val jsonObject = JSONObject()
             jsonObject.put("hook", "signal-protocol-client-cog")
             jsonObject.put("action", "receive_message")
             jsonObject.put("function", "receive_message")
             jsonObject.put("params", sData)
+            Log.i("request-data", jsonObject.toString())
             val sendButton = findViewById<ImageButton>(R.id.sendButton)
             val chatEditText = findViewById<EditText>(R.id.chatEditText)
             sendButton.setOnClickListener {
                 this.chatMessages.add(MessageViewModel(chatEditText.text.toString()))
                 val data = JSONArray()
-                data.put(username)
+                data.put(loggedInUserId.toString())
+                data.put(username) //first in last out
                 data.put(chatEditText.text)
+                Log.i("request-data", data.toString())
+
                 val mJsonObject = JSONObject()
                 mJsonObject.put("hook", "signal-protocol-client-cog")
                 mJsonObject.put("action", "send_message")
                 mJsonObject.put("function", "send_message")
                 mJsonObject.put("params", data)
+                Log.i("request-data", mJsonObject.toString())
+
                 RequestJSON.instance().setURL("asgard").setMethod("POST").setData(mJsonObject).send(this, this::responseApiMessageSent, this::responseApiError)
                 chatEditText.text.clear()
             }
@@ -52,7 +62,12 @@ class UserListItemActivity : AppCompatActivity() {
     }
     private fun responseApiSuccess(response: JSONObject) {
         Log.i("request-success", response.toString())
-        val messageList = response.optJSONArray("results") as JSONArray
+        var newresponse = response.getJSONObject("data") as JSONObject;
+//        var newlist = newresponse.keys() as JSONArray
+        Log.i("request-success", newresponse.toString());
+
+        var newresponse1 = JSONObject(newresponse.getString("msg"))
+        val messageList = newresponse1.optJSONArray("results") as JSONArray;
 
         val chatRecyclerView = findViewById<RecyclerView>(R.id.chatRecyclerView)
         val manager = LinearLayoutManager(this)

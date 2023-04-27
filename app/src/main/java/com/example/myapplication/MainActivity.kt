@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
         val email = findViewById<EditText>(R.id.email)
         val registerButton = findViewById<Button>(R.id.registerbutton)
         preferences = getSharedPreferences("login", MODE_PRIVATE)
-        if(preferences.getBoolean("loggedi",false)){
+        if(preferences.getInt("loggedInUser",0) > 0){
             goToMainActivity()
         }
         registerButton.setOnClickListener {
@@ -37,6 +37,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun goToMainActivity() {
         val intent = Intent(this@MainActivity, UserListActivity::class.java)
+        Log.i("main-tag", preferences.getInt("loggedInUser",0).toString())
+        intent.putExtra("loggedUserId", preferences.getInt("loggedInUser",0));
         startActivity(intent)
     }
 
@@ -53,8 +55,8 @@ class MainActivity : AppCompatActivity() {
         if (!isEmpty(username) && !isEmpty(email)) {
             try {
                 val data = JSONArray()
-                data.put(email) //first in last out
                 data.put(username)
+                data.put(email) //first in last out
                 val mJsonObject = JSONObject()
                 mJsonObject.put("hook", "signal-protocol-client-cog")
                 mJsonObject.put("action", "login_or_register")
@@ -72,7 +74,13 @@ class MainActivity : AppCompatActivity() {
         return false
     }
     private fun responseApiSuccess(response: JSONObject) {
-        preferences.edit().putBoolean("loggedi", true).apply()
+        var newresponse = response.getJSONObject("data") as JSONObject;
+        Log.i("request-success", newresponse.toString());
+
+        var newresponse1 = JSONObject(newresponse.getString("msg"))
+        Log.i("request-success", newresponse1.getString("id"));
+
+        preferences.edit().putInt("loggedInUser", newresponse1.getInt("id")).apply()
         Log.i("request-success", response.toString())
     }
 

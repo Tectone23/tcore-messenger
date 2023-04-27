@@ -8,7 +8,7 @@ import org.json.JSONObject
 import java.lang.Exception
 
 class RequestJSON {
-    private val baseURL: String = "http://0.0.0.0:8080/"
+    private val baseURL: String = "http://127.0.0.1:8080/"
     private var url: String = ""
     private var method: String = "GET"
     private var requestData: JSONObject = JSONObject()

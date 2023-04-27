@@ -8,6 +8,7 @@ import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
 import org.json.JSONArray
 import org.json.JSONObject
+import java.util.Objects
 
 class UserListActivity : AppCompatActivity() {
     var userList = ArrayList<String>()
@@ -32,11 +33,15 @@ class UserListActivity : AppCompatActivity() {
         } catch (error: Exception) {
             error.printStackTrace();
         }
+        val intentData = intent
+        val loggedInUserId = intentData.getIntExtra("loggedUserId", 0)
+        Log.i("userid:", loggedInUserId.toString())
         var mListView = findViewById<ListView>(R.id.userlist)
         mListView.setOnItemClickListener { parent, _, position, _ ->
             val selectedItem = parent.getItemAtPosition(position) as String
             val intent = Intent(this@UserListActivity, UserListItemActivity::class.java)
             intent.putExtra("username", selectedItem);
+            intent.putExtra("loggedUserId", loggedInUserId);
             startActivity(intent)
         }
     }
@@ -44,7 +49,12 @@ class UserListActivity : AppCompatActivity() {
         Log.i("request-success", response.toString());
         // access the listView from xml file
         var mListView = findViewById<ListView>(R.id.userlist)
-        val userArray = response.optJSONArray("results") as JSONArray;
+        var newresponse = response.getJSONObject("data") as JSONObject;
+//        var newlist = newresponse.keys() as JSONArray
+        Log.i("request-success", newresponse.toString());
+
+        var newresponse1 = JSONObject(newresponse.getString("msg"))
+        val userArray = newresponse1.optJSONArray("results") as JSONArray;
         for (i in 0 until userArray.length()) {
             // create a JSONObject for fetching single user data
             val userDetail = userArray.getJSONObject(i);
